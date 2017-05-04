@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+ 
+<mapper namespace="com.fwj.mapper.UserMapper">
+
+	<!-- 如果没有配置mybatis-config.xml文件中的typeAliases，实现类型说明，parameterType必须要完整包名+类名 ； -->
+	 <insert id="save" parameterType="com.fwj.model.User">
+	 	insert into t_user(user_name,user_age) value (#{userName},#{userAge})
+	 	<!-- insert into t_user values(#{userName},#{userAge}) -->
+	 </insert>
+	 <update id="update" parameterType="com.fwj.model.User">
+		update t_user set user_name=#{userName},user_age=#{userAge} where user_id=#{userId}
+	</update>
+	<delete id="delete" parameterType="int">
+		delete from t_user where user_id=#{userId}
+	</delete>
+	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->  
+	<select id="findById" parameterType="int" resultType="com.fwj.model.User">
+		select user_id userId,user_name userName,user_age userAge from t_user where user_id=#{userId}
+	</select>
+	<select id="findAll" resultType="com.fwj.model.User">
+		select user_id userId,user_name userName,user_age userAge from t_user
+	</select>
+</mapper>
