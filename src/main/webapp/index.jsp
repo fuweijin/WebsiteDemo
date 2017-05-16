@@ -19,6 +19,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <h2>hello Website！</h2>
 <h5><a href="<%=basePath%>user/getAllUser">进入用户管理页</a></h5>
 <h2><a href="<%=basePath%>login">登录</a></h2>
+<h2><a href="<%=basePath%>common/toRegister">注册</a></h2>
+
 
 
 </body>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tianyue.mapper.UserMapper">
+
+	<insert id="createUser" parameterType="com.tianyue.model.User" >
+		insert into sys_users(username,password,salt,locked) value(#{username},#{password},#{salt},#{locked})
+	</insert>
+	
+	<update id="updateUser" parameterType = "com.tianyue.model.User">
+		update sys_users set username = #{username},password = #{password},salt = #{salt},locked = #{locked} where  id = #{id}
+	</update>
+	
+	<delete id="deleteUser" parameterType= "Long">
+		delete from sys_users where  id = #{id}
+	</delete>
+	
+	<select id="findByUserId" parameterType="Long" resultType = "com.tianyue.model.User">
+		select * from sys_users where id = #{id}
+	</select>
+	
+	<select id="findByUserName" parameterType = "String" resultType = "com.tianyue.model.User">
+		select id id,username username, password password,salt salt,locked locked from sys_users where username = #{username}
+	</select>
+	
+	<insert id="correlationRoles">
+		insert into sys_users_roles(user_id,role_id) value(#{uid},#{rid})
+	</insert>
+	
+	<delete id="unCorrelationRoles">
+		delete from sys_users_roles where user_id = #{uid} and role_id = #{rid}
+	</delete>
+	
+	<select id="findRoles" parameterType="String" resultType="String">
+		select r.role from sys_users_roles as ur left join sys_roles as r on r.id = ur.role_id left join sys_users as u on u.id = ur.user_id where u.username = #{username}	
+	</select>
+	
+	<select id="findPermission" parameterType="String" resultType="String">
+		select p.permission from sys_roles_permissions as rp 
+		left join sys_permissions as p on p.id = rp.permission_id 
+		left join sys_roles as r on r.id = rp.role_id
+		left join sys_users_roles as ur on r.id = ur.role_id
+		left join sys_users as u on u.id = ur.user_id
+		where u.username = #{username}
+	</select>
+	
+</mapper>

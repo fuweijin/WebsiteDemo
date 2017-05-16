@@ -1,4 +1,4 @@
-package com.fwj.controller;
+package com.tianyue.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +38,7 @@ public class LoginController {
 		String password = httpServletRequest.getParameter("password");
 		
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
-		token.setRememberMe(true);
+//		token.setRememberMe(true);
 		
 		System.out.println("为了验证登录用户而封装的token为"+ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
 		//获取当前的Subject
@@ -89,7 +89,7 @@ public class LoginController {
 	public String logout(HttpServletRequest httpServletRequest){
 		SecurityUtils.getSubject().logout();
 		System.out.println("退出成功！");
-		return "user/fail";
+		return "/";
 	}
 	
 	/**

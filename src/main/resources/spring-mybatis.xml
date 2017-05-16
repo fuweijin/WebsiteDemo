@@ -12,7 +12,8 @@
 		
 	
 		<!-- 自动扫描 --> 
-		<context:component-scan base-package="com.fwj"></context:component-scan>
+		<!-- <context:component-scan base-package="com.fwj"></context:component-scan> -->
+		<context:component-scan base-package="com.tianyue"></context:component-scan>
 	
 		<context:property-placeholder location="classpath:jdbc.properties"/>
 		<!-- 引入配置文件 -->
@@ -44,7 +45,7 @@
 			
 			<!-- 自动扫描mapping.xml文件 --> 
 			
-			 <property name="mapperLocations" value="classpath:com/fwj/mapper/*.xml"></property>
+			 <property name="mapperLocations" value="classpath:com/tianyue/mapper/*.xml"></property>
 		</bean> 
 		
 		<!--
@@ -53,7 +54,8 @@
 		basePackage:指定sql映射文件/接口所在的包（自动扫描）
 		-->
 		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-			<property name="basePackage" value="com.fwj.mapper"></property>
+			<!-- <property name="basePackage" value="com.fwj.mapper"></property> -->
+			<property name="basePackage" value="com.tianyue.mapper"></property>
 			<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
 		</bean>
 		

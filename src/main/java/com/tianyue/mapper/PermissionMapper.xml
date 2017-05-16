@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tianyue.mapper.PermissionMapper">
+	<insert id="createPermission" parameterType="com.tianyue.model.Permission">
+		insert into sys_permissions(permission,description,available) value(#{permission},#{description},#{available})
+	</insert>
+	<select id="findAllPermission" resultType="com.tianyue.model.Permission">
+		select * from sys_permissions
+	</select>
+	<!-- <delete id="deleteConorrelationRole">
+		delete from sys_roles_permissions where permission_id = #{pid}
+	</delete> -->
+	<delete id="deletePermission" parameterType="Long">
+		delete from sys_permissions where id = #{pid}
+	</delete>
+</mapper>

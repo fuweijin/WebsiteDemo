@@ -27,8 +27,8 @@
     <!-- 即<property name="sessionMode" value="native"/>,详细说明见官方文档 -->  
     <!-- 这里主要是设置自定义的单Realm应用,若有多个Realm,可使用'realms'属性代替 -->  
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">  
-        <property name="realm" ref="myRealm"/>
-        <!-- 使用配置的缓存管理器 --> 
+     <property name="realm" ref="myRealm"/>
+     <!-- 使用配置的缓存管理器 --> 
      <property name="cacheManager" ref="cacheManager"></property> 
      <!-- 会话管理 -->
      <property name="sessionManager" ref="sessionManager" />
@@ -53,11 +53,10 @@
         <!-- authc：该过滤器下的页面必须验证后才能访问,它是Shiro内置的一个拦截器org.apache.shiro.web.filter.authc.FormAuthenticationFilter -->  
         <property name="filterChainDefinitions">  
             <value>  
-                /jsp/login=anon  
-                /WEB-INF/jsp/**=authc  
+               <!--  /login=anon
                 /jsp/user/info**=authc  
-                /admin/listUser**=authc,perms[admin:manage]
-                /jsp/user/success = authc,perms[admin:manage]
+                /admin/listUser**=authc,perms[admin:manage] -->
+                /getUserInfo = authc,perms[admin:manage]
                 <!-- /** = authc -->
             </value>  
         </property>  
