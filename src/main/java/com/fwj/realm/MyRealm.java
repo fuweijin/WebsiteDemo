@@ -1,11 +1,15 @@
 package com.fwj.realm;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -14,6 +18,10 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.tianyue.model.User;
+import com.tianyue.service.UserService;
 
 public class MyRealm extends  AuthorizingRealm{
 	
@@ -25,11 +33,48 @@ public class MyRealm extends  AuthorizingRealm{
      * @see 比如说这里从数据库获取权限信息时,先去访问Spring3.1提供的缓存,而不使用Shior提供的AuthorizationCache 
      */  
 
+	@Autowired UserService userService;
+	
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		// TODO Auto-generated method stub
+		
 		//获取当前登录的用户名,等价于(String)principals.fromRealm(this.getName()).iterator().next()  
         String currentUsername = (String)super.getAvailablePrincipal(principals);  
+        
+        //1:从数据库获取用户和角色、权限
+        Set<String> roleSet = new HashSet<>();
+        Set<String> permissionSet = new HashSet<>();
+        //从数据库中获取当前登录用户的详细信息  
+        User user = userService.findByUserName(currentUsername);
+        if(null != user){
+        	//实体类User中包含有用户角色的实体类信息  
+        	roleSet = userService.findRoles(currentUsername);
+        	permissionSet = userService.findPermission(currentUsername);
+        	
+        	System.out.println("role.size:"+roleSet.size());
+    		for(String string : roleSet){
+    			System.out.println(string);
+    		}
+        	
+        	System.out.println("permission.size:"+permissionSet.size());
+    		for(String string : permissionSet){
+    			System.out.println(string);
+    		}
+    		
+    		//为当前用户设置角色和权限 
+            SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+            simpleAuthorizationInfo.addRoles(roleSet);
+            simpleAuthorizationInfo.addStringPermissions(permissionSet);
+            
+            return simpleAuthorizationInfo;
+        	
+        }else{
+        	System.out.println("MyRealm Authorization:"+"用户不存在！");
+        }
+        
+        
+        
 //      List<String> roleList = new ArrayList<String>();  
 //      List<String> permissionList = new ArrayList<String>();  
 //      //从数据库中获取当前登录用户的详细信息  
@@ -57,20 +102,23 @@ public class MyRealm extends  AuthorizingRealm{
 //      //为当前用户设置角色和权限  
 //      SimpleAuthorizationInfo simpleAuthorInfo = new SimpleAuthorizationInfo();  
 //      simpleAuthorInfo.addRoles(roleList);  
-//      simpleAuthorInfo.addStringPermissions(permissionList);  
-        SimpleAuthorizationInfo simpleAuthorInfo = new SimpleAuthorizationInfo();  
-        //实际中可能会像上面注释的那样从数据库取得  
-        if(null!=currentUsername && "papio".equals(currentUsername)){  
-            //添加一个角色,不是配置意义上的添加,而是证明该用户拥有admin角色    
-            simpleAuthorInfo.addRole("admin");  
-            //添加权限  
-            simpleAuthorInfo.addStringPermission("admin:manage");  
-            System.out.println("已为用户[papio]赋予了[admin]角色和[admin:manage]权限");  
-            return simpleAuthorInfo;  
-        }else if(null!=currentUsername && "big".equals(currentUsername)){  
-            System.out.println("当前用户[big]无授权");  
-            return simpleAuthorInfo;  
-        }  
+//      simpleAuthorInfo.addStringPermissions(permissionList); 
+        
+//        //2:从本地获取用户和角色、权限
+//        SimpleAuthorizationInfo simpleAuthorInfo = new SimpleAuthorizationInfo();  
+//        //实际中可能会像上面注释的那样从数据库取得  
+//        if(null!=currentUsername && "papio".equals(currentUsername)){  
+//            //添加一个角色,不是配置意义上的添加,而是证明该用户拥有admin角色    
+//            simpleAuthorInfo.addRole("admin");  
+//            //添加权限  
+//            simpleAuthorInfo.addStringPermission("admin:manage");  
+//            System.out.println("已为用户[papio]赋予了[admin]角色和[admin:manage]权限");  
+//            return simpleAuthorInfo;  
+//        }else if(null!=currentUsername && "big".equals(currentUsername)){  
+//            System.out.println("当前用户[big]无授权");  
+//            return simpleAuthorInfo;  
+//        }  
+        
         //若该方法什么都不做直接返回null的话,就会导致任何用户访问/admin/listUser.jsp时都会自动跳转到unauthorizedUrl指定的地址  
         //详见applicationContext.xml中的<bean id="shiroFilter">的配置 
 		return null;
@@ -87,7 +135,29 @@ public class MyRealm extends  AuthorizingRealm{
         //实际上这个authcToken是从LoginController里面currentUser.login(token)传过来的  
         //两个token的引用都是一样的,本例中是org.apache.shiro.authc.UsernamePasswordToken@33799a1e  
         UsernamePasswordToken token = (UsernamePasswordToken)authcToken;  
-        System.out.println("验证当前Subject时获取到token为" + ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));  
+        System.out.println("验证当前Subject时获取到token为" + ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
+        
+        User user = userService.findByUserName(token.getUsername());
+//        System.out.println("Username:"+token.getUsername());
+//        System.out.println("Principal:"+token.getPrincipal());
+//        System.out.println("Password"+token.getPassword());
+        
+        if(null != user){
+        	
+        	//判断用户是否锁定
+    		if(Boolean.TRUE.equals(userService.findLockedByUserName(token.getUsername()))){
+    			throw new LockedAccountException();
+    		}
+        	
+        	AuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), getName());
+        	this.setSession("currentUser", user.getUsername());
+        	return authenticationInfo;
+        }else{
+        	System.out.println("MyRealm Authentication:"+"用户不存在！");
+        }
+        
+      
+        
 //      User user = userService.getByUsername(token.getUsername());  
 //      if(null != user){  
 //          AuthenticationInfo authcInfo = new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), user.getNickname());  
@@ -96,18 +166,20 @@ public class MyRealm extends  AuthorizingRealm{
 //      }else{  
 //          return null;  
 //      }  
+        
+        
         //此处无需比对,比对的逻辑Shiro会做,我们只需返回一个和令牌相关的正确的验证信息  
         //说白了就是第一个参数填登录用户名,第二个参数填合法的登录密码(可以是从数据库中取到的,本例中为了演示就硬编码了)  
         //这样一来,在随后的登录页面上就只有这里指定的用户和密码才能通过验证  
-        if("papio".equals(token.getUsername())){  
-            AuthenticationInfo authcInfo = new SimpleAuthenticationInfo("papio", "papio", this.getName());  
-            this.setSession("currentUser", "papio");  
-            return authcInfo;  
-        }else if("big".equals(token.getUsername())){  
-            AuthenticationInfo authcInfo = new SimpleAuthenticationInfo("big", "big", this.getName());  
-            this.setSession("currentUser", "big");  
-            return authcInfo;  
-        }  
+//        if("papio".equals(token.getUsername())){  
+//            AuthenticationInfo authcInfo = new SimpleAuthenticationInfo("papio", "papio", this.getName());  
+//            this.setSession("currentUser", "papio");  
+//            return authcInfo;  
+//        }else if("big".equals(token.getUsername())){  
+//            AuthenticationInfo authcInfo = new SimpleAuthenticationInfo("big", "big", this.getName());  
+//            this.setSession("currentUser", "big");  
+//            return authcInfo;  
+//        }  
         //没有返回登录用户名对应的SimpleAuthenticationInfo对象时,就会在LoginController中抛出UnknownAccountException异常  
 		return null;
 	}

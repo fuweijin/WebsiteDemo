@@ -24,6 +24,14 @@
 		select id id,username username, password password,salt salt,locked locked from sys_users where username = #{username}
 	</select>
 	
+	<select id="findLockedByUserName" parameterType="String" resultType="Boolean">
+		select locked locked from sys_users where username = #{username}
+	</select>
+	
+	<select id="findIdByUserName" parameterType="String" resultType="Long">
+		select id id from sys_users where username = #{username}
+	</select>
+	
 	<insert id="correlationRoles">
 		insert into sys_users_roles(user_id,role_id) value(#{uid},#{rid})
 	</insert>

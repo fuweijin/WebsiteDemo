@@ -56,7 +56,8 @@
                <!--  /login=anon
                 /jsp/user/info**=authc  
                 /admin/listUser**=authc,perms[admin:manage] -->
-                /getUserInfo = authc,perms[admin:manage]
+                 /getUserInfo = authc,perms[user:delete]
+                <!-- /getUserInfo = authc,roles[admin] -->
                 <!-- /** = authc -->
             </value>  
         </property>  

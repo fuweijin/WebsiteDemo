@@ -19,6 +19,12 @@ public interface UserService {
 	//根据用户名查询
 	public User findByUserName(String userName);
 	
+	//根据用户名查询id
+	public Long findIdByUserName(String userName);
+	
+	//根据用户名查询是否锁定
+	public Boolean findLockedByUserName(String userName);
+	
 	//根据用户id查询
 	public User findByUserId(Long userid);
 	

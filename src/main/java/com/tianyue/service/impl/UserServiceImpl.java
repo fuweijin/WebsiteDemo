@@ -43,6 +43,18 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
+	public Long findIdByUserName(String userName) {
+		// TODO Auto-generated method stub
+		return userMapper.findIdByUserName(userName);
+	}
+	
+	@Override
+	public Boolean findLockedByUserName(String userName) {
+		// TODO Auto-generated method stub
+		return userMapper.findLockedByUserName(userName);
+	}
+	
+	@Override
 	public User findByUserId(Long userid) {
 		// TODO Auto-generated method stub
 		return userMapper.findByUserId(userid);

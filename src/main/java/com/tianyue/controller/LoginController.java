@@ -12,13 +12,18 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tianyue.service.UserService;
+
 @Controller
 public class LoginController {
 
+	@Autowired UserService userService;
+	
 	@RequestMapping(value="/login")
 	public String doLogin(){
 		
@@ -52,6 +57,9 @@ public class LoginController {
             currentUser.login(token);  
             System.out.println("对用户[" + username + "]进行登录验证..验证通过");  
             url = "user/success";
+            
+
+            
 //            resultPageURL = "main";  
         }catch(UnknownAccountException uae){  
             System.out.println("对用户[" + username + "]进行登录验证..验证未通过,未知账户");  
@@ -71,6 +79,8 @@ public class LoginController {
             ae.printStackTrace();  
             httpServletRequest.setAttribute("message_login", "用户名或密码不正确");  
         }  
+		
+		
 		
 		//验证是否登录成功  
         if(currentUser.isAuthenticated()){  

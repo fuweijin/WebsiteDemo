@@ -16,6 +16,10 @@ public interface UserMapper {
 	
 	public User findByUserName(String userName);
 	
+	public Long findIdByUserName(String userName);
+	
+	public Boolean findLockedByUserName(String userName);
+	
 	public User findByUserId(Long userid);
 	
 	public void correlationRoles(@Param("uid")Long uid,@Param("rid")Long rid);

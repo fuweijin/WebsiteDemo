@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,34 @@ public class CommonController {
 //		User user = new User(username, password);
 //		
 //		userService.createUser(user);
+//		userService.correlationRoles(userService.findIdByUserName(username), 4l);
 //		System.out.println(user);
+		
+		
+		String algorithmName = "md5";
+		String username = "fwj";
+		String password = "123";
+		String salt1 = username;
+//		String salt2 = new SecureRandomNumberGenerator().nextBytes().toHex();
+		String salt2 = "bc6d102b9bb53a103a37fb1132e7c2f7";
+		
+		System.out.println("salt2:"+salt2);
+		
+		int hashIterations = 2;
+		
+		SimpleHash hash = new SimpleHash(algorithmName, password, salt1+salt2, hashIterations);
+		String encodePassword = hash.toHex();
+		
+		System.out.println("加密后："+encodePassword);
+		
+		
+		
+		
+		
+		
+		
+//		System.out.println(userService.findLockedByUserName("jzl"));
+		
 		
 //		Role role = new Role("admin", "超级管理员", Boolean.TRUE);
 //		roleService.createRole(role);
@@ -110,7 +139,7 @@ public class CommonController {
 //		
 //		userService.updateUser(user);
 		
-		Set<String> set = new HashSet<>();
+//		Set<String> set = new HashSet<>();
 //		
 //		set = userService.findRoles("fwj");
 //		
@@ -119,11 +148,11 @@ public class CommonController {
 //			System.out.println(string);
 //		}
 		
-		set = userService.findPermission("ybb");
-		System.out.println("permission.size:"+set.size());
-		for(String string : set){
-			System.out.println(string);
-		}
+//		set = userService.findPermission("jzl");
+//		System.out.println("permission.size:"+set.size());
+//		for(String string : set){
+//			System.out.println(string);
+//		}
 		
 		return "login";
 	}
